@@ -1,0 +1,1 @@
+import * as s from './service.js'; import {ok} from '../../utils/http.js'; export const create=async(req,res)=>ok(res,await s.create(req.user.id,req.body.amount,req.body.method,req.body.notes),201); export const list=async(req,res)=>ok(res,await s.list()); export const approve=async(req,res)=>ok(res,await s.approve(req.params.id,req.user.id));

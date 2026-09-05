@@ -1,0 +1,9 @@
+import {Router} from 'express'; import {z} from 'zod'; import {validate} from '../../middleware/validate.js'; import {botAuth,findUserByWhatsapp} from '../../middleware/botAuth.js'; import {register} from '../users/service.js'; import {list as products} from '../products/service.js'; import {create as createTransaction} from '../transactions/service.js'; import {history} from '../balance/service.js'; import {ok} from '../../utils/http.js';
+const r=Router(); r.use(botAuth);
+r.post('/users/register',validate(z.object({name:z.string().min(2),whatsappNumber:z.string().min(8)})),async(req,res)=>{let u=await findUserByWhatsapp(req.body.whatsappNumber);if(!u)u=await register(req.body);ok(res,u)});
+r.get('/users/:whatsappNumber',async(req,res)=>{const u=await findUserByWhatsapp(req.params.whatsappNumber);if(!u)return res.status(404).json({success:false,message:'User not found'});ok(res,u)});
+r.get('/products',async(req,res)=>ok(res,await products({category:req.query.category,status:'ACTIVE'})));
+r.get('/balance/:whatsappNumber',async(req,res)=>{const u=await findUserByWhatsapp(req.params.whatsappNumber);if(!u)return res.status(404).json({success:false,message:'User not found'});ok(res,{balance:u.balance})});
+r.get('/history/:whatsappNumber',async(req,res)=>{const u=await findUserByWhatsapp(req.params.whatsappNumber);if(!u)return res.status(404).json({success:false,message:'User not found'});ok(res,await history(u.id))});
+r.post('/transactions',validate(z.object({whatsappNumber:z.string(),productId:z.string().uuid(),destination:z.string().min(5).max(100)})),async(req,res)=>{const u=await findUserByWhatsapp(req.body.whatsappNumber);if(!u||u.status!=='ACTIVE')return res.status(404).json({success:false,message:'User not found/blocked'});ok(res,await createTransaction(u.id,req.body.productId,req.body.destination),201)});
+export default r;

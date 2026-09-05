@@ -1,0 +1,4 @@
+import crypto from 'node:crypto'; import {env} from '../../config/env.js';
+async function post(path,body){ const r=await fetch(`${env.digiflazz.baseUrl}${path}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}); if(!r.ok) throw new Error(`Digiflazz HTTP ${r.status}`); return r.json(); }
+export async function priceList(){ return post('/price-list',{cmd:'prepaid',username:env.digiflazz.username,sign:crypto.createHash('md5').update(env.digiflazz.username+env.digiflazz.apiKey+'pricelist').digest('hex')}); }
+export async function topup({sku,customerNo,refId}){ const sign=crypto.createHash('md5').update(env.digiflazz.username+env.digiflazz.apiKey+refId).digest('hex'); return post('/transaction',{username:env.digiflazz.username,buyer_sku_code:sku,customer_no:customerNo,ref_id:refId,sign}); }

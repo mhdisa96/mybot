@@ -1,0 +1,1 @@
+import * as s from './service.js'; import {ok} from '../../utils/http.js'; export const list=async(req,res)=>ok(res,await s.list(req.query)); export const create=async(req,res)=>ok(res,await s.create(req.body),201);

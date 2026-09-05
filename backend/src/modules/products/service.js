@@ -1,0 +1,3 @@
+import { pool } from '../../config/db.js';
+export async function list({category,status='ACTIVE'}={}){ const {rows}=await pool.query(`SELECT * FROM products WHERE ($1::text IS NULL OR category=$1) AND status=$2 ORDER BY category,name`,[category||null,status]); return rows; }
+export async function create(p){ const {rows}=await pool.query(`INSERT INTO products(code,name,category,provider,cost_price,selling_price,status,digiflazz_sku) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,[p.code,p.name,p.category,p.provider||null,p.costPrice,p.sellingPrice,p.status||'ACTIVE',p.digiflazzSku||null]); return rows[0]; }

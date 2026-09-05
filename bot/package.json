@@ -1,0 +1,1 @@
+{"name":"ppob-bot","version":"1.0.0","type":"module","scripts":{"dev":"node --watch src/index.js","start":"node src/index.js"},"dependencies":{"@whiskeysockets/baileys":"^6.7.18","axios":"^1.11.0","pino":"^9.9.0"}}
